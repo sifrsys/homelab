@@ -1,0 +1,20 @@
+# Toegang tot het cluster: nooit in Git
+kubeconfig
+*.kubeconfig
+.kube/
+
+# Sleutels en tokens
+*.key
+*.pem
+keys.txt
+*node-token*
+
+# Lokale wachtwoorden en ontsleutelde bestanden
+.env
+.env.*
+*.dec.yaml
+*.dec.yml
+.vault_pass*
+
+# macOS
+.DS_Store
