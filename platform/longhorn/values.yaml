@@ -1,0 +1,17 @@
+# Longhorn Helm values. Chart: longhorn/longhorn 1.13.0 (Longhorn v1.13.0).
+
+defaultSettings:
+  # Only nodes labelled node.longhorn.io/create-default-disk=true (hal, nuc) store data.
+  # The Pi's USB 2.0 disk is too slow; Pi pods still use volumes over the network.
+  createDefaultDiskLabeledNodes: true
+  # Two copies: one on hal, one on nuc.
+  defaultReplicaCount: 2
+
+persistence:
+  # k3s local-path stays the default StorageClass; apps ask for "longhorn" explicitly.
+  defaultClass: false
+  defaultClassReplicaCount: 2
+
+# Recommended by the Longhorn docs when installing with Argo CD.
+preUpgradeChecker:
+  jobEnabled: false
