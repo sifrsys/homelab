@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: demo
+    namespace: sops-test
+stringData:
+    hello: ENC[AES256_GCM,data:L45JKfU=,iv:mGk2TiXXd/wHTNh+j8eOQUc7KcrXJT7G/CA0UGHuh14=,tag:EzcnSMmtxXx3xd7PUWWRpg==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBtUFUwMG9PT3oxTUVXZHlW
+            dlM0TmdhS0dCNHc4V2FqaDdDRUZJN3FQa2tBCnFVVGRyOWRhenNNZEtiT3h4Yit0
+            TlZnU3cwMUlDR3Q4cVp3WGhSSXUxSVEKLS0tIGp0SHlkWHU1U2U5UkwwU2xpQk9o
+            T1F2cG5NRG5IUm9Kc3BCSkc4Z0pZaGMK45eztGH4LnfVvohwynjsRVSsziuwNq8b
+            Ken0+iZILhXVmxMHuBmYVUdJfUVixSBi6SgbOxIgdd+nL9FbvBDR6g==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1wznem3jha4t3d3new4x4czfvcyfaqwh0drl5pcnkc073pzee3qps4ukkxy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB2clpweHNHSlpLeUQvWG9C
+            TFE5Z25VakNweU5qZWlRM2tRVDVZOWxJRlZRClVUdnZMK2VrS1dyck8raG05NGll
+            eUF0YTg4U2UzRlIzU3NtREdKL0ZXS1EKLS0tIDNKcEkxQnRBamFKcEo2UXdhUFZO
+            UXppWStZRjRFZWpTSUZEWm5QbldGbkUKjcaxI3KM+GueI3FaJ0X0FgXKCx9auZXl
+            q5yXkqN9QwthIzJAsSiSEeWm9c/pNsr17V3X+6wBTKOktald2nr/9g==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age10slh55fx25fg8tvt7q8sdxjpn94chvjmk38nseyd40g997mt34psgpz8ac
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-11-01T17:24:50Z"
+    mac: ENC[AES256_GCM,data:7LcyLW6SjOfW/Jto9RSNsOmJ6a+2RImORMDHT5pHSFh8JG5BBhgG481QtnO5tek9bF6PPKWAbhlajKgZXHrWq2TuN8kLT4PT6DhZX+7dN1FqM/Xu1m+V+S7QWeALOMGY7m9L7NvG8FINx1e1qTC3F+wUI+ewq7nBUb540IBkpdU=,iv:N0AQa3cFUqISNxQZ3V7PRvInAId3bMOEb2QCCtkLWAw=,tag:GaYz5S+nWVjnqMqZCLG/xw==,type:str]
+    version: 3.13.3
