@@ -1,0 +1,19 @@
+# Traefik Helm values. Chart: traefik/traefik 42.2.0 (Traefik v3.7.16).
+
+# Two replicas on different nodes: the front door survives one node failure.
+deployment:
+  replicas: 2
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: traefik
+
+# Fixed LAN address from the MetalLB pool. No random NodePorts on the nodes.
+service:
+  annotations:
+    metallb.io/loadBalancerIPs: 192.168.2.221
+  spec:
+    allocateLoadBalancerNodePorts: false
