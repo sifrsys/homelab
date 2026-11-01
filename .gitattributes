@@ -1,0 +1,3 @@
+# Count YAML (Ansible + Kubernetes manifests) in GitHub language stats
+*.yml linguist-detectable=true
+*.yaml linguist-detectable=true
