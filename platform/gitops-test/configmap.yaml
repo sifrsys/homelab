@@ -1,0 +1,8 @@
+# GitOps smoke test: this object only exists because it is in Git.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-gitops
+  namespace: gitops-test
+data:
+  message: "hello from git"
