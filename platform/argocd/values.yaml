@@ -2,6 +2,10 @@
 # Chart: argo/argo-cd 10.11.6 (Argo CD v3.5.6).
 # Only differences from the chart defaults live here.
 
+# Public URL of the UI (LAN-only name, served by Traefik).
+global:
+  domain: argocd.home.sifrsys.dev
+
 # No SSO yet: log in with the local admin account only.
 dex:
   enabled: false
@@ -10,10 +14,22 @@ dex:
 notifications:
   enabled: false
 
-# KSOPS: decrypt SOPS-encrypted Kubernetes secrets during kustomize builds.
 configs:
+  # TLS ends at Traefik (wildcard cert); argocd-server speaks plain HTTP behind it.
+  params:
+    server.insecure: true
+  # KSOPS: decrypt SOPS-encrypted Kubernetes secrets during kustomize builds.
   cm:
     kustomize.buildOptions: "--enable-alpha-plugins --enable-exec"
+
+# UI via Traefik on the LAN only (no public DNS, no port forward).
+server:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
 
 repoServer:
   env:
