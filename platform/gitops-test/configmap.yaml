@@ -5,4 +5,4 @@ metadata:
   name: hello-gitops
   namespace: gitops-test
 data:
-  message: "hello from git"
+  message: "changed in git"
