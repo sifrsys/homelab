@@ -1,0 +1,26 @@
+# Argo CD manages its own Helm release (chart pinned, values from this repo).
+# No resources-finalizer on purpose: deleting this Application must never delete Argo CD.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://argoproj.github.io/argo-helm
+      chart: argo-cd
+      targetRevision: 10.11.6
+      helm:
+        releaseName: argocd
+        valueFiles:
+          - $values/platform/argocd/values.yaml
+    - repoURL: git@github.com:sifrsys/homelab.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    syncOptions:
+      - ServerSideApply=true

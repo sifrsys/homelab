@@ -1,0 +1,19 @@
+# Root application (app of apps). Applied once by hand; everything else comes from Git.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:sifrsys/homelab.git
+    targetRevision: main
+    path: platform/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
