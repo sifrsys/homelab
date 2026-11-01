@@ -1,0 +1,21 @@
+# kube-vip: virtual IP 192.168.2.210 for the Kubernetes API (control plane only; MetalLB handles Services).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-vip
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:sifrsys/homelab.git
+    targetRevision: main
+    path: platform/kube-vip
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
