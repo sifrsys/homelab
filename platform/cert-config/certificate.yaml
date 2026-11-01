@@ -11,4 +11,4 @@ spec:
     - home.sifrsys.dev
   issuerRef:
     kind: Issuer
-    name: letsencrypt-staging
+    name: letsencrypt-prod

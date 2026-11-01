@@ -5,3 +5,4 @@ generators:
 resources:
   - ./issuers.yaml
   - ./certificate.yaml
+  - ./tlsstore.yaml

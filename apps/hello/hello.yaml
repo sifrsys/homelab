@@ -45,8 +45,11 @@ metadata:
   namespace: hello
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - hello.home.sifrsys.dev
   rules:
-    - host: hello.lan
+    - host: hello.home.sifrsys.dev
       http:
         paths:
           - path: /
