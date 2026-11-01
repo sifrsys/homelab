@@ -1,0 +1,26 @@
+---
+# Phase 1: base setup for all k3s hosts (rpi4, hal, nuc)
+- name: Base setup for k3s hosts
+  hosts: k3s
+  become: true
+  tasks:
+    - name: Update apt cache (at most once per hour)
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install packages for Longhorn and the disk test
+      ansible.builtin.apt:
+        name:
+          - open-iscsi
+          - nfs-common
+          - fio
+        state: present
+
+    - name: Enable and start iscsid (required by Longhorn)
+      ansible.builtin.systemd_service:
+        name: iscsid
+        enabled: true
+        state: started
+      # In check mode open-iscsi is not really installed, so iscsid may not exist yet
+      ignore_errors: "{{ ansible_check_mode }}"

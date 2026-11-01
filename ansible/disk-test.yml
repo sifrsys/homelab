@@ -1,0 +1,50 @@
+---
+# Measure disk sync latency for etcd.
+# Guideline: 99th percentile fdatasync latency should be below 10 ms.
+- name: etcd disk latency test
+  hosts: k3s
+  become: true
+  vars:
+    test_dir: /var/lib/etcd-disk-test
+  tasks:
+    - name: Run fio and always clean up
+      block:
+        - name: Create test directory
+          ansible.builtin.file:
+            path: "{{ test_dir }}"
+            state: directory
+            mode: "0700"
+
+        - name: Run fio with the etcd workload (about 22 MB of small synced writes)
+          ansible.builtin.command:
+            argv:
+              - fio
+              - --rw=write
+              - --ioengine=sync
+              - --fdatasync=1
+              - "--directory={{ test_dir }}"
+              - --size=22m
+              - --bs=2300
+              - --name=etcd
+              - --output-format=json
+          register: fio
+          changed_when: false
+      always:
+        - name: Remove test directory
+          ansible.builtin.file:
+            path: "{{ test_dir }}"
+            state: absent
+
+    - name: Read the 99th percentile fdatasync latency
+      ansible.builtin.set_fact:
+        p99_ms: "{{ ((fio.stdout | from_json).jobs[0].sync.lat_ns.percentile['99.000000'] / 1000000) | round(2) }}"
+
+    - name: Show result
+      ansible.builtin.debug:
+        msg: "p99 fdatasync = {{ p99_ms }} ms (etcd wants below 10 ms)"
+
+    - name: Check against the etcd guideline
+      ansible.builtin.assert:
+        that: p99_ms | float < 10
+        fail_msg: "Too slow for etcd: {{ p99_ms }} ms"
+        success_msg: "OK for etcd"
