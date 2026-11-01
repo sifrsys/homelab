@@ -1,12 +1,18 @@
 ---
 # Phase 2: k3s with embedded etcd on all three hosts.
 # The k3s_init host (hal) starts the cluster; the others join one at a time.
+# A config change restarts k3s per node (handler), so with serial: 1 the restart is rolling.
 - name: Start the cluster on the first server
   hosts: k3s_init
   become: true
   tasks:
     - name: Install k3s server
       ansible.builtin.import_tasks: tasks/k3s-server.yml
+  handlers:
+    - name: Restart k3s
+      ansible.builtin.systemd_service:
+        name: k3s
+        state: restarted
 
 - name: Join the other servers one at a time
   hosts: k3s:!k3s_init
@@ -15,3 +21,8 @@
   tasks:
     - name: Install k3s server
       ansible.builtin.import_tasks: tasks/k3s-server.yml
+  handlers:
+    - name: Restart k3s
+      ansible.builtin.systemd_service:
+        name: k3s
+        state: restarted

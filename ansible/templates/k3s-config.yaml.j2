@@ -11,6 +11,7 @@ tls-san:
 {% for host in groups['k3s'] %}
   - {{ hostvars[host].ansible_host }}
 {% endfor %}
+  - {{ k3s_api_vip }}
 # Traefik comes back later via MetalLB; servicelb would clash with Docker ports.
 disable:
   - traefik

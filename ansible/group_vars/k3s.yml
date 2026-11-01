@@ -3,3 +3,6 @@ ansible_python_interpreter: /usr/bin/python3
 
 # k3s version for all nodes. Upgrades are a deliberate change here.
 k3s_version: v1.36.5+k3s1
+
+# Virtual IP for the Kubernetes API, held by kube-vip (outside DHCP .1-.200 and the MetalLB pool .220-.239).
+k3s_api_vip: 192.168.2.210
