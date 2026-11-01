@@ -1,0 +1,11 @@
+# Argo CD Helm values for the homelab cluster.
+# Chart: argo/argo-cd 10.11.6 (Argo CD v3.5.6).
+# Only differences from the chart defaults live here.
+
+# No SSO yet: log in with the local admin account only.
+dex:
+  enabled: false
+
+# No alert channel yet.
+notifications:
+  enabled: false
