@@ -118,3 +118,56 @@
       ansible.builtin.systemd_service:
         name: systemd-timesyncd
         state: restarted
+
+# Phase 3: Longhorn prerequisites (found by `longhornctl check preflight`).
+- name: Longhorn prerequisites
+  hosts: k3s
+  become: true
+  tasks:
+    - name: Install cryptsetup (needed for encrypted volumes)
+      ansible.builtin.apt:
+        name: cryptsetup
+        state: present
+
+    - name: Load kernel modules at boot (dm_crypt for encryption, nfs for RWX volumes)
+      ansible.builtin.copy:
+        dest: /etc/modules-load.d/longhorn.conf
+        content: |
+          dm_crypt
+          nfs
+        mode: "0644"
+
+    - name: Load kernel modules now
+      community.general.modprobe:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - dm_crypt
+        - nfs
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Create multipath config directory
+      ansible.builtin.file:
+        path: /etc/multipath/conf.d
+        state: directory
+        mode: "0755"
+      when: ansible_facts.services['multipathd.service'] is defined and ansible_facts.services['multipathd.service'].state == 'running'
+
+    - name: Keep multipathd away from Longhorn volumes (Longhorn KB)
+      ansible.builtin.copy:
+        dest: /etc/multipath/conf.d/longhorn.conf
+        content: |
+          blacklist {
+              devnode "^sd[a-z0-9]+"
+          }
+        mode: "0644"
+      when: ansible_facts.services['multipathd.service'] is defined and ansible_facts.services['multipathd.service'].state == 'running'
+      notify: Restart multipathd
+
+  handlers:
+    - name: Restart multipathd
+      ansible.builtin.systemd_service:
+        name: multipathd
+        state: restarted
