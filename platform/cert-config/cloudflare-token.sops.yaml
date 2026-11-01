@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: cloudflare-api-token
+    namespace: traefik
+type: Opaque
+stringData:
+    api-token: ENC[AES256_GCM,data:slzWWRiS2+yTiFcseHufrI1p9r0cnpJ0wPnUCPiwdWnBwx062CicO3IaMw5/YiC94lg9uTI=,iv:YAqmelVr842A1fRrdbz8oHDaqVgCcvQ9jeSh6cTqHI4=,tag:zdPeAmGse6wMqcEEOmPGtw==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSArK3czd1hWVHpqSHVNYno5
+            OWZTVHZkdEF5VmM1L0Via1ZGNDhNRTRlVVNjCm1kdDR4VWY3YjIxc0dxK0haQ0hF
+            TGVHMDM2bkhPdHRnNitCQkpTdVpTQ00KLS0tIGc2VUhjb0VTc3VKOEFDLzFleDln
+            MXBrZW9HTTRCRDVGSlpaTVdZdVdjN0EK0AHQRlgiPaKzOV3LwytYpdo5ONoqh8ur
+            BkjlEST7tbLv1mHwZlvAMb5obG1dkSA54aS4gRtD4S7Un/cHrg9UjA==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1wznem3jha4t3d3new4x4czfvcyfaqwh0drl5pcnkc073pzee3qps4ukkxy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBmWHhVQkwzMjRaRko3dnJC
+            QzVURERjdkUydjhVNEJIN21kVjc3L2hjV0hnCjdBS1hJSGNTSndVaTFOMUNsQmRn
+            Z0dYcEFzODJlR1h4RUJGNXl1RFc4Z0kKLS0tIFVheGpCMDBXQ0tSWTBFbUN6VlhO
+            TUR5R2owRm13NitxaVBBTlNOYTlGWmMKEmrC/m1NyvOWxY8X/zZZeTdz2a3fh30/
+            WVhpA54ZL6g2UIq1VO7bD1vWTWq67s8ByOVtrbQreF1MFaQb9U/SVg==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age10slh55fx25fg8tvt7q8sdxjpn94chvjmk38nseyd40g997mt34psgpz8ac
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-11-01T17:32:07Z"
+    mac: ENC[AES256_GCM,data:Q1ziuKC4Uyg0U4RR7FYAP+/GOB19oYv0cU8yqt5KEffdbH7JZXFIn6hdBUP3FibONGEzuW+FTdLFoPOgrZ1llBMPEQuEvdMw2LeMwfT9LMw6oGkn14SWh2BcW9mYfjbgsihznCqSN82KOcxJiN76Ye6OoxMfby+sYi6iq4GR6OA=,iv:8yKOOdIyaGZ1+BDXsvuXP5vReGGMikNWP8/0ywpfqEg=,tag:MJwzH8eYzimocXjHXoxcAw==,type:str]
+    version: 3.13.3

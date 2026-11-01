@@ -1,0 +1,14 @@
+# One wildcard certificate for everything at home. Wildcard: no service names in public CT logs.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-home
+  namespace: traefik
+spec:
+  secretName: wildcard-home-tls
+  dnsNames:
+    - "*.home.sifrsys.dev"
+    - home.sifrsys.dev
+  issuerRef:
+    kind: Issuer
+    name: letsencrypt-staging
