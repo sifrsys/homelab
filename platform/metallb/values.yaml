@@ -1,0 +1,4 @@
+# MetalLB Helm values. Chart: metallb/metallb 0.16.1 (MetalLB v0.16.1).
+# Layer 2 mode only: no BGP, so the bundled FRR-K8s backend is not needed.
+frrk8s:
+  enabled: false

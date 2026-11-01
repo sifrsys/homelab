@@ -1,0 +1,22 @@
+# Addresses MetalLB may hand out. Outside the router's DHCP range (.1-.200).
+# autoAssign false: a Service only gets an IP when it asks for one
+# (annotation metallb.io/loadBalancerIPs). Plan: .220 DNS, .221 Traefik, .222 Plex.
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: homelab-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.168.2.220-192.168.2.239
+  autoAssign: false
+---
+# Announce the pool on the LAN with ARP (layer 2 mode).
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: homelab-l2
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - homelab-pool
