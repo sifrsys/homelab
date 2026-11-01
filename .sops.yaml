@@ -1,6 +1,11 @@
+# SOPS creation rules. First matching rule wins.
 creation_rules:
+  # Ansible secrets (sudo passwords, k3s token): only the admin key on the Mac.
   - path_regex: ansible/.*\.sops\.ya?ml$
     age: age1wznem3jha4t3d3new4x4czfvcyfaqwh0drl5pcnkc073pzee3qps4ukkxy
+  # Kubernetes secrets: admin key + cluster key (Argo CD/KSOPS). Only data/stringData encrypted.
   - path_regex: .*\.sops\.ya?ml$
     encrypted_regex: ^(data|stringData)$
-    age: age1wznem3jha4t3d3new4x4czfvcyfaqwh0drl5pcnkc073pzee3qps4ukkxy
+    age: >-
+      age1wznem3jha4t3d3new4x4czfvcyfaqwh0drl5pcnkc073pzee3qps4ukkxy,
+      age10slh55fx25fg8tvt7q8sdxjpn94chvjmk38nseyd40g997mt34psgpz8ac
