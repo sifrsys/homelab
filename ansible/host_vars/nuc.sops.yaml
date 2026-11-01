@@ -1,0 +1,16 @@
+ansible_become_password: ENC[AES256_GCM,data:Ze98Hcn8Ppk3hgLSMNfgcA==,iv:ORZ7F8UnsOkb/bi6LlL7uf9B1nOw1KMC9JHlIwE0K9o=,tag:tdRcVuMedZnyHpi12XoDZA==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBwNnlucDdKUC8rbjdpWWpr
+            SXIzRlYvTWxub1BkZGVMTWNRTFpRcnJqV3cwCjJRVzFnc0s3ZC9xYnV1WWhoNHhV
+            VzluQkdBbkpTWEJhSmJnNldtYUE3TWcKLS0tIFhUTHd3eldSUlVpUkRVNjFNU3Fl
+            SW00SlFXb1lLMUEzc3cvN1pyQURUb2MKAyyqzQJtEjUXjtGE5X5AUCdUNoNkl9ms
+            oCk6tZgZrnX53VybnNnh962Mgzfj8rQqP6cHk0L4y+WxHJeic/5Svg==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1wznem3jha4t3d3new4x4czfvcyfaqwh0drl5pcnkc073pzee3qps4ukkxy
+    encrypted_regex: ^ansible_become_password$
+    lastmodified: "2026-11-01T11:58:25Z"
+    mac: ENC[AES256_GCM,data:vMniirbzMhfwz29YnUVqbivaEu6E02faSTQDl8TzawPVmm8cg05aif9B47ZOC8Yh/Psz0G5CMBZ/tw0tE47de9tmq/KjvuSmN56C0YJlKStOpkCG090++TeFwZYN1bntO9oUmXnqEuhcFEm54w+/6wih2Qx8qcYXxD/nqPsXFYc=,iv:xM0/6Fhi+m+SnWHuCxtwW8UwB8nEw8U+AgbQziUR4O8=,tag:Uv2Qsz4xGpAMLZtbP8sLyg==,type:str]
+    version: 3.13.3
