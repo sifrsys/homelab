@@ -24,3 +24,97 @@
         state: started
       # In check mode open-iscsi is not really installed, so iscsid may not exist yet
       ignore_errors: "{{ ansible_check_mode }}"
+
+    # --- Time: k3s and etcd need a correct clock before they start ---
+    - name: Collect service facts (which time daemon does this host use?)
+      ansible.builtin.service_facts:
+
+    # chrony (Ubuntu 26.04: rpi4)
+    - name: chrony - time source by IP, usable before DNS works at boot
+      ansible.builtin.copy:
+        dest: /etc/chrony/sources.d/homelab.sources
+        content: |
+          # Managed by Ansible (homelab).
+          # Time source by IP: the RPi4 is its own DNS server, so DNS-based pools
+          # are not reachable early in boot.
+          server 162.159.200.1 iburst
+        owner: root
+        group: root
+        mode: "0644"
+      when: "'chrony.service' in ansible_facts.services"
+      notify: Reload chrony sources
+
+    - name: chrony - remove the manual time source from chrony.conf (now in sources.d)
+      ansible.builtin.lineinfile:
+        path: /etc/chrony/chrony.conf
+        regexp: '^server 162\.159\.200\.1'
+        state: absent
+      when: "'chrony.service' in ansible_facts.services"
+      notify: Restart chrony
+
+    - name: chrony - let time-sync.target wait for a synchronised clock (max 180 s)
+      ansible.builtin.systemd_service:
+        name: chrony-wait
+        enabled: true
+      when: "'chrony.service' in ansible_facts.services"
+
+    # systemd-timesyncd (Ubuntu 24.04: hal, nuc)
+    - name: timesyncd - create drop-in directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - /etc/systemd/timesyncd.conf.d
+        - /etc/systemd/system/systemd-time-wait-sync.service.d
+      when: "'systemd-timesyncd.service' in ansible_facts.services"
+
+    - name: timesyncd - add a time source by IP next to the Ubuntu default
+      ansible.builtin.copy:
+        dest: /etc/systemd/timesyncd.conf.d/homelab.conf
+        content: |
+          # Managed by Ansible (homelab).
+          # Time source by IP so time sync works when Pi-hole (DNS) is down.
+          [Time]
+          NTP=162.159.200.1 ntp.ubuntu.com
+        owner: root
+        group: root
+        mode: "0644"
+      when: "'systemd-timesyncd.service' in ansible_facts.services"
+      notify: Restart timesyncd
+
+    - name: timesyncd - give up waiting after 180 s, so boot never hangs
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/systemd-time-wait-sync.service.d/homelab-timeout.conf
+        content: |
+          # Managed by Ansible (homelab).
+          [Service]
+          TimeoutStartSec=180
+        owner: root
+        group: root
+        mode: "0644"
+      when: "'systemd-timesyncd.service' in ansible_facts.services"
+
+    - name: timesyncd - let time-sync.target wait for a synchronised clock
+      ansible.builtin.systemd_service:
+        name: systemd-time-wait-sync
+        enabled: true
+        daemon_reload: true
+      when: "'systemd-timesyncd.service' in ansible_facts.services"
+
+  handlers:
+    - name: Reload chrony sources
+      ansible.builtin.command: chronyc reload sources
+      changed_when: true
+
+    - name: Restart chrony
+      ansible.builtin.systemd_service:
+        name: chrony
+        state: restarted
+
+    - name: Restart timesyncd
+      ansible.builtin.systemd_service:
+        name: systemd-timesyncd
+        state: restarted
