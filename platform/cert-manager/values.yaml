@@ -1,0 +1,13 @@
+# cert-manager Helm values. Chart: jetstack/cert-manager v1.21.3.
+
+# Install and upgrade the CRDs with the chart; keep them if the chart is removed
+# (removing CRDs would delete every Certificate in the cluster).
+crds:
+  enabled: true
+  keep: true
+
+# DNS-01 self-check: ask public resolvers directly instead of Pi-hole/Unbound,
+# so a cached "no TXT record yet" answer cannot slow down issuance.
+extraArgs:
+  - --dns01-recursive-nameservers-only
+  - --dns01-recursive-nameservers=1.1.1.1:53,9.9.9.9:53
