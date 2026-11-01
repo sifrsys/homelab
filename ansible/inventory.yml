@@ -11,3 +11,7 @@ all:
         nuc:
           ansible_host: 192.168.2.8
           ansible_user: ak
+    # The first k3s server: it starts the cluster, the others join it.
+    k3s_init:
+      hosts:
+        hal:

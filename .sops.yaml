@@ -1,6 +1,5 @@
 creation_rules:
   - path_regex: ansible/.*\.sops\.ya?ml$
-    encrypted_regex: ^ansible_become_password$
     age: age1wznem3jha4t3d3new4x4czfvcyfaqwh0drl5pcnkc073pzee3qps4ukkxy
   - path_regex: .*\.sops\.ya?ml$
     encrypted_regex: ^(data|stringData)$

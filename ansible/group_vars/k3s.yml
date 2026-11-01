@@ -1,2 +1,5 @@
 # Settings for all hosts in the k3s group (rpi4, hal, nuc)
 ansible_python_interpreter: /usr/bin/python3
+
+# k3s version for all nodes. Upgrades are a deliberate change here.
+k3s_version: v1.36.5+k3s1

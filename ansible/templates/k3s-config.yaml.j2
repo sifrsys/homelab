@@ -1,0 +1,23 @@
+# Managed by Ansible (homelab). Do not edit by hand.
+node-name: {{ inventory_hostname }}
+node-ip: {{ ansible_host }}
+token: {{ k3s_token }}
+{% if inventory_hostname in groups['k3s_init'] %}
+cluster-init: true
+{% else %}
+server: https://{{ hostvars[groups['k3s_init'][0]].ansible_host }}:6443
+{% endif %}
+tls-san:
+{% for host in groups['k3s'] %}
+  - {{ hostvars[host].ansible_host }}
+{% endfor %}
+# Traefik comes back later via MetalLB; servicelb would clash with Docker ports.
+disable:
+  - traefik
+  - servicelb
+secrets-encryption: true
+# Option B: the RPi4 disk is slower than the etcd guideline (11.7 ms p99 fdatasync).
+# Revert to the defaults (100 / 1000) once ansible/disk-test.yml passes on all hosts.
+etcd-arg:
+  - heartbeat-interval=500
+  - election-timeout=5000

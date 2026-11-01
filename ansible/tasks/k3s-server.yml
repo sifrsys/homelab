@@ -1,0 +1,66 @@
+---
+# Install a k3s server node. Imported by k3s.yml.
+- name: Refuse to continue without a synchronised clock (etcd and certificates need it)
+  ansible.builtin.command: timedatectl show -p NTPSynchronized --value
+  register: k3s_timesync
+  changed_when: false
+  failed_when: k3s_timesync.stdout != "yes"
+  check_mode: false
+
+- name: Create k3s config directory
+  ansible.builtin.file:
+    path: /etc/rancher/k3s
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Write k3s config (contains the cluster token, root only)
+  ansible.builtin.template:
+    src: templates/k3s-config.yaml.j2
+    dest: /etc/rancher/k3s/config.yaml
+    owner: root
+    group: root
+    mode: "0600"
+  diff: false
+
+- name: Create k3s drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/k3s.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Start k3s only after the clock is synchronised
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/k3s.service.d/10-time-sync.conf
+    content: |
+      # Managed by Ansible (homelab).
+      [Unit]
+      Wants=time-sync.target
+      After=time-sync.target
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Download the k3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /usr/local/bin/k3s-install.sh
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Install k3s {{ k3s_version }} as server
+  ansible.builtin.command:
+    cmd: /usr/local/bin/k3s-install.sh
+    creates: /usr/local/bin/k3s
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    INSTALL_K3S_EXEC: server
+
+- name: Wait until this node is Ready
+  ansible.builtin.command: /usr/local/bin/k3s kubectl wait --for=condition=Ready node/{{ inventory_hostname }} --timeout=300s
+  changed_when: false
+  when: not ansible_check_mode
