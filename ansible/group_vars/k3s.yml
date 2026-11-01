@@ -1,2 +1,2 @@
-# Instellingen voor alle machines in de groep k3s (RPi4, HAL, NUC)
+# Settings for all hosts in the k3s group (rpi4, hal, nuc)
 ansible_python_interpreter: /usr/bin/python3

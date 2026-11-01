@@ -1,3 +1,3 @@
 # homelab
 
-k3s-cluster op RPi4, HAL en NUC, ingericht met Ansible en beheerd via GitOps.
+k3s cluster on a Raspberry Pi 4, HAL and a NUC, provisioned with Ansible and managed with GitOps.
