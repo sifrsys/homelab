@@ -1,0 +1,23 @@
+# yamllint config for the homelab repo.
+# Based on the default rules, aligned with what ansible-lint expects.
+extends: default
+
+ignore: |
+  *.sops.yaml
+
+rules:
+  document-start: disable
+  line-length:
+    max: 160
+    level: warning
+  truthy:
+    allowed-values: ["true", "false"]
+    check-keys: false
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: false
+  braces:
+    max-spaces-inside: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
