@@ -1,0 +1,30 @@
+name: lint
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+env:
+  # Keep in sync with the tools on the Mac (brew kubeconform, pre-commit).
+  KUBECONFORM_VERSION: 0.8.0
+  PRE_COMMIT_VERSION: 4.7.0
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Install kubeconform (pinned version, checksum verified)
+        run: |
+          base="https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}"
+          curl -sSfLO "${base}/kubeconform-linux-amd64.tar.gz"
+          curl -sSfLO "${base}/CHECKSUMS"
+          sha256sum --ignore-missing -c CHECKSUMS
+          tar -xzf kubeconform-linux-amd64.tar.gz kubeconform
+          sudo mv kubeconform /usr/local/bin/
+      - name: Install pre-commit (pinned version)
+        run: pip install "pre-commit==${PRE_COMMIT_VERSION}"
+      - name: Run yamllint, ansible-lint and kubeconform
+        env:
+          SKIP: gitleaks  # full-history scan already runs in gitleaks.yml
+        run: pre-commit run --all-files --show-diff-on-failure
