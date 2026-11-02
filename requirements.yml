@@ -1,0 +1,4 @@
+# Ansible collections the playbooks need (installed by ansible-lint and CI).
+collections:
+  - name: community.general
+    version: "13.5.0"

@@ -53,7 +53,7 @@
     group: root
     mode: "0700"
 
-- name: Install k3s {{ k3s_version }} as server
+- name: Install k3s as server {{ k3s_version }}
   ansible.builtin.command:
     cmd: /usr/local/bin/k3s-install.sh
     creates: /usr/local/bin/k3s

@@ -1,7 +1,7 @@
 ---
 # Measure disk sync latency for etcd.
 # Guideline: 99th percentile fdatasync latency should be below 10 ms.
-- name: etcd disk latency test
+- name: Measure etcd disk latency
   hosts: k3s
   become: true
   vars:

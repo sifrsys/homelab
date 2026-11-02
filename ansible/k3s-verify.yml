@@ -49,7 +49,7 @@
 
         - name: Ping every test pod from every other test pod
           ansible.builtin.shell: |
-            set -e
+            set -eo pipefail
             pods=$({{ kubectl }} get pods -l app=nettest -o jsonpath='{range .items[*]}{.metadata.name},{.spec.nodeName},{.status.podIP}{"\n"}{end}')
             echo "$pods"
             for from in $pods; do

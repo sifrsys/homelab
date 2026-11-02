@@ -30,7 +30,7 @@
       ansible.builtin.service_facts:
 
     # chrony (Ubuntu 26.04: rpi4)
-    - name: chrony - time source by IP, usable before DNS works at boot
+    - name: Chrony - time source by IP, usable before DNS works at boot
       ansible.builtin.copy:
         dest: /etc/chrony/sources.d/homelab.sources
         content: |
@@ -44,7 +44,7 @@
       when: "'chrony.service' in ansible_facts.services"
       notify: Reload chrony sources
 
-    - name: chrony - remove the manual time source from chrony.conf (now in sources.d)
+    - name: Chrony - remove the manual time source from chrony.conf (now in sources.d)
       ansible.builtin.lineinfile:
         path: /etc/chrony/chrony.conf
         regexp: '^server 162\.159\.200\.1'
@@ -52,14 +52,14 @@
       when: "'chrony.service' in ansible_facts.services"
       notify: Restart chrony
 
-    - name: chrony - let time-sync.target wait for a synchronised clock (max 180 s)
+    - name: Chrony - let time-sync.target wait for a synchronised clock (max 180 s)
       ansible.builtin.systemd_service:
         name: chrony-wait
         enabled: true
       when: "'chrony.service' in ansible_facts.services"
 
     # systemd-timesyncd (Ubuntu 24.04: hal, nuc)
-    - name: timesyncd - create drop-in directories
+    - name: Timesyncd - create drop-in directories
       ansible.builtin.file:
         path: "{{ item }}"
         state: directory
@@ -71,7 +71,7 @@
         - /etc/systemd/system/systemd-time-wait-sync.service.d
       when: "'systemd-timesyncd.service' in ansible_facts.services"
 
-    - name: timesyncd - add a time source by IP next to the Ubuntu default
+    - name: Timesyncd - add a time source by IP next to the Ubuntu default
       ansible.builtin.copy:
         dest: /etc/systemd/timesyncd.conf.d/homelab.conf
         content: |
@@ -85,7 +85,7 @@
       when: "'systemd-timesyncd.service' in ansible_facts.services"
       notify: Restart timesyncd
 
-    - name: timesyncd - give up waiting after 180 s, so boot never hangs
+    - name: Timesyncd - give up waiting after 180 s, so boot never hangs
       ansible.builtin.copy:
         dest: /etc/systemd/system/systemd-time-wait-sync.service.d/homelab-timeout.conf
         content: |
@@ -97,7 +97,7 @@
         mode: "0644"
       when: "'systemd-timesyncd.service' in ansible_facts.services"
 
-    - name: timesyncd - let time-sync.target wait for a synchronised clock
+    - name: Timesyncd - let time-sync.target wait for a synchronised clock
       ansible.builtin.systemd_service:
         name: systemd-time-wait-sync
         enabled: true

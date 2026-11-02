@@ -1,0 +1,11 @@
+# ansible-lint config for the homelab repo.
+# Strictest profile; the repo already meets it, so keep it there.
+profile: production
+
+# Only lint the Ansible part; Kubernetes manifests are checked by kubeconform.
+exclude_paths:
+  - platform/
+  - apps/
+  - bootstrap/
+  - .github/
+  - "**/*.sops.yaml"
