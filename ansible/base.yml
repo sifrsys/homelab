@@ -60,16 +60,12 @@
 
     # The RPi4 has no battery clock. After a power cut it boots with an old date, and then
     # NTS (chrony) and DNS-over-TLS (Unbound) reject their certificates: no time, no DNS.
-    - name: Chrony - allow the IP source when no NTS source works (clock too far off at boot)
-      ansible.builtin.copy:
-        dest: /etc/chrony/conf.d/homelab.conf
-        content: |
-          # Managed by Ansible (homelab).
-          # Prefer NTS sources, but allow the plain IP source when none of them is usable.
-          authselectmode prefer
-        owner: root
-        group: root
-        mode: "0644"
+    # Removed 3 Nov: "authselectmode prefer" did not help. With NTS sources configured, chrony
+    # never selects the plain IP source on its own (noselect). fake-hwclock fixes the boot clock.
+    - name: Chrony - no custom authselectmode (remove the old drop-in)
+      ansible.builtin.file:
+        path: /etc/chrony/conf.d/homelab.conf
+        state: absent
       when: "'chrony.service' in ansible_facts.services"
       notify: Restart chrony
 
@@ -88,26 +84,12 @@
         - fake-hwclock-save.timer
       when: not (has_rtc | default(true))
 
-    - name: Unbound - create systemd drop-in directory
+    # Removed 3 Nov: Unbound waiting for time-sync.target made a loop (chrony needs DNS for its
+    # NTS servers, DNS waited for chrony): no DNS in the house for minutes after every boot.
+    - name: Unbound - no wait for time sync (remove the old drop-in)
       ansible.builtin.file:
-        path: /etc/systemd/system/unbound.service.d
-        state: directory
-        owner: root
-        group: root
-        mode: "0755"
-      when: "'unbound.service' in ansible_facts.services"
-
-    - name: Unbound - start only after the clock is synchronised (DNS-over-TLS needs valid certificates)
-      ansible.builtin.copy:
-        dest: /etc/systemd/system/unbound.service.d/homelab-time.conf
-        content: |
-          # Managed by Ansible (homelab).
-          [Unit]
-          Wants=time-sync.target
-          After=time-sync.target
-        owner: root
-        group: root
-        mode: "0644"
+        path: /etc/systemd/system/unbound.service.d/homelab-time.conf
+        state: absent
       when: "'unbound.service' in ansible_facts.services"
       notify: Reload systemd
 
