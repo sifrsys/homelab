@@ -1,0 +1,17 @@
+---
+# Nightly backup to the NFS target on HAL. Only volumes whose PVC has the label
+# recurring-job-group.longhorn.io/backup-daily: enabled take part (Prometheus stays out).
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: backup-daily
+  namespace: longhorn-system
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  task: backup
+  cron: "17 3 * * *"
+  retain: 7
+  concurrency: 1
+  groups:
+    - backup-daily

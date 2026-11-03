@@ -22,3 +22,7 @@ csi:
   provisionerReplicaCount: 2
   resizerReplicaCount: 2
   snapshotterReplicaCount: 2
+
+# Backups go to the SSD on HAL over NFS (see ansible/backup-target.yml).
+defaultBackupStore:
+  backupTarget: nfs://192.168.2.10:/mnt/backup/homelab-longhorn-backup

@@ -1,4 +1,4 @@
-# Monitoring prerequisites: Grafana admin login (SOPS/KSOPS). Synced before the monitoring app.
+# Monitoring config: Grafana admin login and alert webhook URLs (SOPS/KSOPS), alert routes and rules. Synced before the monitoring app.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
