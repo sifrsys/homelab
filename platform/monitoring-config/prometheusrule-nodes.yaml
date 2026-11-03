@@ -1,0 +1,30 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: homelab-nodes
+  namespace: monitoring
+  labels:
+    release: monitoring
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  groups:
+    - name: homelab-nodes
+      rules:
+        - alert: HomelabNodeMemoryLow
+          expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.15
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.instance }}: less than 15% memory available"
+            description: "Available: {{ $value | humanizePercentage }}. Check: kubectl top pods -A --sort-by=memory"
+        - alert: HomelabNodeMemoryLow
+          expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.08
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.instance }}: less than 8% memory available"
+            description: "Available: {{ $value | humanizePercentage }}. Node may freeze (no swap)."

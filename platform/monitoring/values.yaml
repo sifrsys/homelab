@@ -67,6 +67,9 @@ alertmanager:
         memory: 64Mi
       limits:
         memory: 128Mi
+    # Without this the operator adds namespace="monitoring" to every route.
+    alertmanagerConfigMatcherStrategy:
+      type: None
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

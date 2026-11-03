@@ -1,0 +1,40 @@
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: ntfy
+  namespace: monitoring
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  route:
+    receiver: ntfy-warning
+    groupBy: ['alertname', 'instance']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    # Only real problems go to the phone; Watchdog and info alerts stay silent.
+    matchers:
+      - name: severity
+        matchType: =~
+        value: warning|critical
+    routes:
+      - receiver: ntfy-critical
+        repeatInterval: 4h
+        matchers:
+          - name: severity
+            matchType: =
+            value: critical
+  receivers:
+    - name: ntfy-warning
+      webhookConfigs:
+        - urlSecret:
+            name: alertmanager-ntfy
+            key: url-warning
+          sendResolved: true
+    - name: ntfy-critical
+      webhookConfigs:
+        - urlSecret:
+            name: alertmanager-ntfy
+            key: url-critical
+          sendResolved: true
