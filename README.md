@@ -15,8 +15,13 @@ Everything is reachable on the home network only; nothing is exposed to the inte
 
 ## Status
 
-- [x] Machines provisioned with Ansible
-- [x] Three-node k3s cluster
-- [x] Platform deployed through Argo CD
+- [x] Machines provisioned with Ansible (packages, time sync, k3s with rolling restarts)
+- [x] Three-node k3s cluster, HA control plane, floating API address (kube-vip)
+- [x] Platform deployed through Argo CD: MetalLB, Traefik, cert-manager, Longhorn
+- [x] Secrets encrypted with SOPS, decrypted in the cluster (KSOPS)
 - [x] CI checks on every push
+- [x] Failover tested: one node down, cluster and apps stay reachable
+- [ ] Monitoring and alerts (Prometheus, Grafana)
+- [ ] Backups outside the cluster
+- [ ] Host hardening: firewall, SSH settings, automatic security updates
 - [ ] Move home services from Docker to the cluster, one by one
