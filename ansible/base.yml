@@ -58,6 +58,59 @@
         enabled: true
       when: "'chrony.service' in ansible_facts.services"
 
+    # The RPi4 has no battery clock. After a power cut it boots with an old date, and then
+    # NTS (chrony) and DNS-over-TLS (Unbound) reject their certificates: no time, no DNS.
+    - name: Chrony - allow the IP source when no NTS source works (clock too far off at boot)
+      ansible.builtin.copy:
+        dest: /etc/chrony/conf.d/homelab.conf
+        content: |
+          # Managed by Ansible (homelab).
+          # Prefer NTS sources, but allow the plain IP source when none of them is usable.
+          authselectmode prefer
+        owner: root
+        group: root
+        mode: "0644"
+      when: "'chrony.service' in ansible_facts.services"
+      notify: Restart chrony
+
+    - name: Fake-hwclock - keep the last known time on disk and restore it at boot
+      ansible.builtin.apt:
+        name: fake-hwclock
+        state: present
+      when: not (has_rtc | default(true))
+
+    - name: Fake-hwclock - make sure restore at boot and the periodic save are on
+      ansible.builtin.systemd_service:
+        name: "{{ item }}"
+        enabled: true
+      loop:
+        - fake-hwclock-load.service
+        - fake-hwclock-save.timer
+      when: not (has_rtc | default(true))
+
+    - name: Unbound - create systemd drop-in directory
+      ansible.builtin.file:
+        path: /etc/systemd/system/unbound.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      when: "'unbound.service' in ansible_facts.services"
+
+    - name: Unbound - start only after the clock is synchronised (DNS-over-TLS needs valid certificates)
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/unbound.service.d/homelab-time.conf
+        content: |
+          # Managed by Ansible (homelab).
+          [Unit]
+          Wants=time-sync.target
+          After=time-sync.target
+        owner: root
+        group: root
+        mode: "0644"
+      when: "'unbound.service' in ansible_facts.services"
+      notify: Reload systemd
+
     # systemd-timesyncd (Ubuntu 24.04: hal, nuc)
     - name: Timesyncd - create drop-in directories
       ansible.builtin.file:
@@ -105,6 +158,10 @@
       when: "'systemd-timesyncd.service' in ansible_facts.services"
 
   handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
     - name: Reload chrony sources
       ansible.builtin.command: chronyc reload sources
       changed_when: true

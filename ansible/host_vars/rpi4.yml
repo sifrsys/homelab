@@ -1,3 +1,6 @@
 # Ubuntu 26.04 ships sudo-rs; Ansible does not recognise its password prompt.
 # Use classic sudo (sudo.ws) on this host.
 ansible_become_exe: /usr/bin/sudo.ws
+
+# No battery-backed clock (RTC): fake-hwclock keeps the last known time on disk.
+has_rtc: false
