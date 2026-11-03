@@ -1,0 +1,37 @@
+---
+# Headless service: stable names pihole-0.pihole and pihole-1.pihole for nebula-sync.
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole
+spec:
+  clusterIP: None
+  selector:
+    app: pihole
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+# DNS for the LAN on a fixed MetalLB address. Local keeps the real client IP in the Pi-hole logs.
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-dns
+  annotations:
+    metallb.io/loadBalancerIPs: 192.168.2.222
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  allocateLoadBalancerNodePorts: false
+  selector:
+    app: pihole
+  ports:
+    - name: dns-udp
+      port: 53
+      targetPort: dns-udp
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: dns-tcp
+      protocol: TCP

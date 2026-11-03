@@ -1,0 +1,78 @@
+---
+# Copies lists, groups, clients and local DNS records from Pi-hole 1 (RPi4, Docker) to the k3s replicas.
+# Not a full sync: the replicas keep their own password, and locked FTLCONF_ settings are excluded.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nebula-sync
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nebula-sync
+  template:
+    metadata:
+      labels:
+        app: nebula-sync
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values: ["rpi4"]
+      containers:
+        - name: nebula-sync
+          image: ghcr.io/lovelaze/nebula-sync@sha256:59c51378460f6dc8707cc91a16aa62dff5cd5dd8b39353658b45cb00d6bfddd8
+          env:
+            - name: TZ
+              value: Europe/Amsterdam
+            - name: PRIMARY
+              valueFrom:
+                secretKeyRef:
+                  name: pihole-secrets
+                  key: primary
+            - name: REPLICAS
+              valueFrom:
+                secretKeyRef:
+                  name: pihole-secrets
+                  key: replicas
+            - name: CRON
+              value: "*/15 * * * *"
+            - name: RUN_GRAVITY
+              value: "true"
+            # Pi-hole 1 uses its own self-signed certificate.
+            - name: CLIENT_SKIP_TLS_VERIFICATION
+              value: "true"
+            - name: FULL_SYNC
+              value: "false"
+            - name: SYNC_CONFIG_DNS
+              value: "true"
+            - name: SYNC_CONFIG_DNS_EXCLUDE
+              value: "upstreams,listeningMode,interface"
+            - name: SYNC_GRAVITY_GROUP
+              value: "true"
+            - name: SYNC_GRAVITY_AD_LIST
+              value: "true"
+            - name: SYNC_GRAVITY_AD_LIST_BY_GROUP
+              value: "true"
+            - name: SYNC_GRAVITY_DOMAIN_LIST
+              value: "true"
+            - name: SYNC_GRAVITY_DOMAIN_LIST_BY_GROUP
+              value: "true"
+            - name: SYNC_GRAVITY_CLIENT
+              value: "true"
+            - name: SYNC_GRAVITY_CLIENT_BY_GROUP
+              value: "true"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]

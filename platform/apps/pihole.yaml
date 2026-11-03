@@ -1,0 +1,27 @@
+# Pi-hole in k3s (phase A): second DNS on 192.168.2.222 next to the Docker Pi-hole on the RPi4.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pihole
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:sifrsys/homelab.git
+    targetRevision: main
+    path: apps/pihole
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pihole
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 5m

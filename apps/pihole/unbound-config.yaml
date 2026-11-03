@@ -1,0 +1,42 @@
+---
+# Same resolver as on the RPi4: DNS-over-TLS to Quad9 with DNSSEC, only for Pi-hole in the same pod.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-config
+data:
+  unbound.conf: |
+    server:
+      verbosity: 0
+      interface: 127.0.0.1
+      port: 5335
+      do-ip4: yes
+      do-udp: yes
+      do-tcp: yes
+      do-ip6: no
+      prefer-ip6: no
+      # Container paths: no chroot, no user switch, trust anchor on a writable emptyDir.
+      chroot: ""
+      username: ""
+      directory: "/opt/unbound/etc/unbound"
+      auto-trust-anchor-file: "/opt/unbound/etc/unbound/var/root.key"
+      harden-glue: yes
+      harden-dnssec-stripped: yes
+      use-caps-for-id: no
+      edns-buffer-size: 1232
+      prefetch: yes
+      num-threads: 1
+      so-rcvbuf: 1m
+      tls-cert-bundle: /etc/ssl/certs/ca-certificates.crt
+      private-address: 192.168.0.0/16
+      private-address: 169.254.0.0/16
+      private-address: 172.16.0.0/12
+      private-address: 10.0.0.0/8
+      private-address: fd00::/8
+      private-address: fe80::/10
+      private-domain: "plex.direct"
+    forward-zone:
+      name: "."
+      forward-tls-upstream: yes
+      forward-addr: 9.9.9.9@853#dns.quad9.net
+      forward-addr: 149.112.112.112@853#dns.quad9.net
