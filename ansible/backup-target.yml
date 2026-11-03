@@ -1,0 +1,70 @@
+---
+- name: Backup target on HAL (SSD mount and NFS export for Longhorn)
+  hosts: hal
+  become: true
+  vars:
+    backup_label: hal-backup-ssd-1
+    backup_mount: /mnt/backup
+    backup_export: /mnt/backup/homelab-longhorn-backup
+    backup_nfs_clients:
+      - 192.168.2.8
+      - 192.168.2.10
+      - 192.168.2.11
+  tasks:
+    - name: Install disk health tools and NFS server
+      ansible.builtin.apt:
+        name:
+          - smartmontools
+          - nfs-kernel-server
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    # nofail: HAL still boots when the SSD is missing or broken.
+    - name: Mount backup SSD by label
+      ansible.posix.mount:
+        path: "{{ backup_mount }}"
+        src: "LABEL={{ backup_label }}"
+        fstype: ext4
+        opts: defaults,nofail,x-systemd.device-timeout=10s
+        state: mounted
+
+    # root_squash maps root on the nodes to nobody, so the directory belongs to nobody.
+    - name: Create Longhorn backup directory
+      ansible.builtin.file:
+        path: "{{ backup_export }}"
+        state: directory
+        owner: nobody
+        group: nogroup
+        mode: "0750"
+
+    - name: Ensure NFS exports.d directory exists
+      ansible.builtin.file:
+        path: /etc/exports.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    # mp= exports only while the SSD is mounted, never the empty folder on the system disk.
+    - name: Export Longhorn backup directory to cluster nodes only
+      ansible.builtin.copy:
+        dest: /etc/exports.d/homelab-longhorn-backup.exports
+        content: |
+          # Managed by Ansible (backup-target.yml).
+          {{ backup_export }} {{ backup_nfs_clients | map('regex_replace', '$', '(rw,sync,no_subtree_check,root_squash,mp=' ~ backup_mount ~ ')') | join(' ') }}
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload NFS exports
+
+    - name: Enable and start NFS server
+      ansible.builtin.service:
+        name: nfs-server
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Reload NFS exports
+      ansible.builtin.command: exportfs -ra
+      changed_when: true
