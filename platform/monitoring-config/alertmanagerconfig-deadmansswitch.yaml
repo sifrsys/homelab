@@ -1,0 +1,26 @@
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: deadmansswitch
+  namespace: monitoring
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  # Watchdog always fires; healthchecks.io alerts when these pings stop.
+  route:
+    receiver: healthchecks
+    groupWait: 10s
+    groupInterval: 1m
+    repeatInterval: 5m
+    matchers:
+      - name: alertname
+        matchType: =
+        value: Watchdog
+  receivers:
+    - name: healthchecks
+      webhookConfigs:
+        - urlSecret:
+            name: alertmanager-healthchecks
+            key: url
+          sendResolved: false

@@ -4,4 +4,5 @@ generators:
   - ./secret-generator.yaml
 resources:
   - alertmanagerconfig.yaml
+  - alertmanagerconfig-deadmansswitch.yaml
   - prometheusrule-nodes.yaml

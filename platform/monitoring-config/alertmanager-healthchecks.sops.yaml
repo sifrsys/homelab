@@ -1,0 +1,31 @@
+apiVersion: v1
+data:
+    url: ENC[AES256_GCM,data:jYsw9FAcXE5bd17CFyEvgZ2WOmrc8EStCMdDMLGySGgd2jyfMuZyDDdAcBwbonI2qF0TehAQHHmOMlB4NS77cvCxFDljbnm0V+AEEw==,iv:QbgHAqLuouRYQ9uc13ywaTMjMWB9Lu41BzlyeJ40pPg=,tag:bCOB6zJ41VaMhcAUJeKQgA==,type:str]
+kind: Secret
+metadata:
+    name: alertmanager-healthchecks
+    namespace: monitoring
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBUTGR4b29ENWtCMC8yN0Zx
+            bjdDeFZJY2Vkc2M3YXBocHEwU1AraWJkYmlRCnp1MzVuMUdxREQzSXkvU1RQbnJE
+            UHVDMVNoZ2hTTHNBdWpxQVVwUEhoaVEKLS0tIGVQTHR0WVF6RTgrMEM5R0d3WnBG
+            YTlSV1lGa28zZktabDVPMEhtdm1ObVkKtLE6jJJGWRBS1V48i1T/5xp+QFhPFIK1
+            bVDtc9uJXlX0CHmsKyc3i+ghDG2VqY8g+DVfueqHpcFanuraQt6xHg==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1wznem3jha4t3d3new4x4czfvcyfaqwh0drl5pcnkc073pzee3qps4ukkxy
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBQNVk3Z09PUzBpRVZ3RDRV
+            NzdHZXYya1k3Q2NOUlhBQkJ5LzVsRFcwemtFCmFVMlg0WlBGeWlpUWYrdlRqdVVF
+            ZmJITFVZYzNmeFg3RnVmYjRpbTZaLzgKLS0tIHhXK2tKbTB5cldqcmdTL3BsY0Rm
+            Nkh6N0wwcWZtcVRFbEFSWk1raU5Ya3MKKWGhqy9oTl+VqL/GP/DgZ2Hhl+ONWaOK
+            N+27t5g90MaYNoZVuaENgvtMzhoWfKvJ8Whr3mY3Ry1aNg/NhcZDgg==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age10slh55fx25fg8tvt7q8sdxjpn94chvjmk38nseyd40g997mt34psgpz8ac
+    encrypted_regex: ^(data|stringData)$
+    lastmodified: "2026-11-03T10:13:48Z"
+    mac: ENC[AES256_GCM,data:HeAyHFqureE9MEuk6IznDVj2qu7fg73HGqt1QC9zrVX+/GrJRKX9bzGkatBZEyOR+RlzQ9mQmDvxV/ejACyS0vIyJdVWSO5uetvCeklMOswbNoEHUbFBaYguwAG7g2M1CCO0wfbPU9UMGIETY2reR44MvSvgspd6JpjjE/PVUsU=,iv:jsEqnHkv7G3u3Ij1XdFpRqSk+oIzZoZgpxXoaekcego=,tag:Yb/hPGIdJGl0iR6DbZ22Hw==,type:str]
+    version: 3.13.3
