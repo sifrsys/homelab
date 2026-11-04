@@ -9,23 +9,32 @@ metadata:
 spec:
   route:
     receiver: ntfy-warning
-    groupBy: ['alertname', 'instance']
+    # One group per alert type, not per instance: fewer messages after a node restart.
+    groupBy: ['alertname']
     groupWait: 30s
-    groupInterval: 5m
-    repeatInterval: 12h
+    groupInterval: 15m
+    repeatInterval: 24h
     # Only real problems go to the phone; Watchdog and info alerts stay silent.
     matchers:
       - name: severity
         matchType: =~
         value: warning|critical
     routes:
+      # A failure to deliver via ntfy can never be delivered via ntfy; visible in Grafana instead.
+      - receiver: blackhole
+        matchers:
+          - name: alertname
+            matchType: =~
+            value: AlertmanagerFailedToSendAlerts|AlertmanagerClusterFailedToSendAlerts
       - receiver: ntfy-critical
+        groupInterval: 5m
         repeatInterval: 4h
         matchers:
           - name: severity
             matchType: =
             value: critical
   receivers:
+    - name: blackhole
     - name: ntfy-warning
       webhookConfigs:
         - urlSecret:
